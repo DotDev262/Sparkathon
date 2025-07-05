@@ -28,16 +28,12 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  cupertino_icons: ^1.0.8
   flutter:
     sdk: flutter
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
+  logger: ^2.6.0
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -45,10 +41,11 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter packages.
 flutter:
 
@@ -57,17 +54,17 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  assets:
+    - assets/images/logo/walmart_spark.png
+    - assets/fonts/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
-
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
-
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
@@ -87,3 +84,19 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  fonts:
+    - family: Bogle # This is the main font family name
+      fonts:
+        - asset: assets/fonts/Bogle/BOGLEREGULAR.OTF # Regular weight
+        - asset: assets/fonts/Bogle/BOGLEBOLD.OTF    # Bold weight
+          weight: 700
+        - asset: assets/fonts/Bogle/BOGLEBLACK.OTF   # Black weight (heavier than bold)
+          weight: 900 # A common weight for 'black' or 'heavy' fonts
+        - asset: assets/fonts/Bogle/BOGLEITALIC.OTF  # Regular italic style
+          style: italic
+        - asset: assets/fonts/Bogle/BOGLEBOLDITALIC.OTF # Bold italic style
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Bogle/BOGLEBLACKITALIC.OTF # Black italic style
+          weight: 900
+          style: italic
