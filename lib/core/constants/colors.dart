@@ -27,5 +27,6 @@ class AppColors {
   ); // Darker grey for secondary text
   static const Color green = Colors.green;
   static const Color orange = Colors.orange;
+  static const Color red = Colors.red;
   static const Color transparent = Colors.transparent;
 }
