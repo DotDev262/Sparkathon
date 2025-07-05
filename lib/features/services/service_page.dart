@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:walmart/core/constants/colors.dart';
-import 'package:walmart/core/utils/logger.dart'; // Import logger
+import 'package:walmart/core/utils/logger.dart';
+import 'package:walmart/core/routes/app_routes.dart'; // Import AppRoutes
 
 class ServicesPage extends StatelessWidget {
   const ServicesPage({super.key});
@@ -12,10 +13,11 @@ class ServicesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.5,
+        backgroundColor: AppColors.primaryBlue,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.white),
           onPressed: () {
-            Navigator.of(context).pop(); // Go back to the previous screen
+            Navigator.of(context).pop();
           },
         ),
         title: Text(
@@ -33,6 +35,46 @@ class ServicesPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // AI Services Section (New Section for clarity)
+              Text(
+                'AI Services',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.black87,
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                crossAxisSpacing: 16.0,
+                mainAxisSpacing: 16.0,
+                childAspectRatio: 1.5,
+                children: [
+                  _buildServiceCard(
+                    context,
+                    Icons.message_outlined, // Icon for chat
+                    'AI Chat',
+                    () {
+                      logger.d('AI Chat tapped');
+                    },
+                  ),
+                  _buildServiceCard(
+                    context,
+                    Icons.phone_outlined, // Icon for voice call
+                    'AI Voice Call',
+                    () {
+                      logger.d('AI Voice Call tapped');
+                      Navigator.of(context).pushNamed(
+                        AppRoutes.aiVoiceCall,
+                      ); // Navigate to AI Voice Call Page
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32.0),
+
               // In-Store Services Section
               Text(
                 'In-Store Services',
@@ -44,12 +86,11 @@ class ServicesPage extends StatelessWidget {
               const SizedBox(height: 16.0),
               GridView.count(
                 shrinkWrap: true,
-                physics:
-                    const NeverScrollableScrollPhysics(), // Disable scrolling for GridView itself
+                physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: 2,
                 crossAxisSpacing: 16.0,
                 mainAxisSpacing: 16.0,
-                childAspectRatio: 1.5, // Adjust aspect ratio for card height
+                childAspectRatio: 1.5,
                 children: [
                   _buildServiceCard(
                     context,
@@ -57,14 +98,6 @@ class ServicesPage extends StatelessWidget {
                     'Photo Center',
                     () {
                       logger.d('Photo Center tapped');
-                    },
-                  ),
-                  _buildServiceCard(
-                    context,
-                    Icons.chat_bubble_outline,
-                    'AI Chat',
-                    () {
-                      logger.d('AI Chat tapped');
                     },
                   ),
                   _buildServiceCard(
@@ -97,7 +130,7 @@ class ServicesPage extends StatelessWidget {
                 crossAxisCount: 2,
                 crossAxisSpacing: 16.0,
                 mainAxisSpacing: 16.0,
-                childAspectRatio: 1.5, // Adjust aspect ratio for card height
+                childAspectRatio: 1.5,
                 children: [
                   _buildServiceCard(
                     context,
@@ -140,7 +173,7 @@ class ServicesPage extends StatelessWidget {
     );
   }
 
-  // --- Helper Widget for Service Cards ---
+  // --- Helper Widget for Service Cards (unchanged) ---
   Widget _buildServiceCard(
     BuildContext context,
     IconData icon,
