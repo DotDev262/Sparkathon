@@ -50,7 +50,7 @@ class HomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           spreadRadius: 1,
                           blurRadius: 3,
                           offset: const Offset(0, 2),
@@ -68,9 +68,6 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16.0),
-                  // This is where you could add a large, full-width banner if needed,
-                  // or the horizontal scrolling section if you want to bring it back in a tile form.
-                  // For now, let's omit the old horizontal cards here and start with main promo tiles below.
                 ],
               ),
             ),
@@ -235,6 +232,26 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+      // --- FLOATING ACTION BUTTON ADDED HERE ---
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigate to the AI Chat page using its named route
+          Navigator.of(context).pushNamed(AppRoutes.aiChat);
+          logger.d('AI Chat FAB tapped'); // Add a log for the FAB
+        },
+        backgroundColor: AppColors.primaryBlue, // Walmart blue
+        foregroundColor: AppColors.white, // White icon
+        elevation: 6.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+            30.0,
+          ), // Makes it a circular button
+        ),
+        child: const Icon(Icons.chat_bubble_outline), // Chat icon
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation
+          .endFloat, // Places it bottom right, floating
+
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColors.primaryBlue,
@@ -379,9 +396,6 @@ class HomePage extends StatelessWidget {
   }
 
   // --- Helper Widgets (Only _buildStoreInfoTile is retained) ---
-
-  // Removed _buildHorizontalCard as its functionality is superseded by _buildPromoTile.
-  // Removed _buildCategoryCard as its functionality is superseded by _buildPromoTile.
 
   Widget _buildStoreInfoTile(
     BuildContext context, {
