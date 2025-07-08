@@ -33,11 +33,17 @@ dependencies:
     sdk: flutter
   http: ^1.4.0
   logger: ^2.6.0
+  nfc_manager: 
+    path : plugins/nfc_manager
+  
 
 dev_dependencies:
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
+
+  
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -79,19 +85,22 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
-  fonts:
-    - family: Bogle # This is the main font family name
-      fonts:
-        - asset: assets/fonts/Bogle/BOGLEREGULAR.OTF # Regular weight
-        - asset: assets/fonts/Bogle/BOGLEBOLD.OTF # Bold weight
-          weight: 700
-        - asset: assets/fonts/Bogle/BOGLEBLACK.OTF # Black weight (heavier than bold)
-          weight: 900 # A common weight for 'black' or 'heavy' fonts
-        - asset: assets/fonts/Bogle/BOGLEITALIC.OTF # Regular italic style
-          style: italic
-        - asset: assets/fonts/Bogle/BOGLEBOLDITALIC.OTF # Bold italic style
-          weight: 700
-          style: italic
-        - asset: assets/fonts/Bogle/BOGLEBLACKITALIC.OTF # Black italic style
-          weight: 900
-          style: italic
+fonts:
+  - family: Bogle
+    fonts:
+      - asset: assets/fonts/Bogle/BOGLEREGULAR.OTF
+      - asset: assets/fonts/Bogle/BOGLEBOLD.OTF
+        weight: 700
+      - asset: assets/fonts/Bogle/BOGLEBLACK.OTF
+        weight: 900
+      - asset: assets/fonts/Bogle/BOGLEITALIC.OTF
+        style: italic
+      - asset: assets/fonts/Bogle/BOGLEBOLDITALIC.OTF
+        weight: 700
+        style: italic
+      - asset: assets/fonts/Bogle/BOGLEBLACKITALIC.OTF
+        weight: 900
+        style: italic
+
+
+
