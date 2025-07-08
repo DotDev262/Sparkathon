@@ -23,9 +23,9 @@ class ServicesPage extends StatelessWidget {
         title: Text(
           'Services',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: AppColors.white,
-          ),
+                fontWeight: FontWeight.bold,
+                color: AppColors.white,
+              ),
         ),
         centerTitle: true,
       ),
@@ -35,13 +35,13 @@ class ServicesPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // AI Services Section (New Section for clarity)
+              // AI Services Section
               Text(
                 'AI Services',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black87,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.black87,
+                    ),
               ),
               const SizedBox(height: 16.0),
               GridView.count(
@@ -54,7 +54,7 @@ class ServicesPage extends StatelessWidget {
                 children: [
                   _buildServiceCard(
                     context,
-                    Icons.message_outlined, // Icon for chat
+                    Icons.message_outlined,
                     'AI Chat',
                     () {
                       logger.d('AI Chat tapped');
@@ -62,13 +62,11 @@ class ServicesPage extends StatelessWidget {
                   ),
                   _buildServiceCard(
                     context,
-                    Icons.phone_outlined, // Icon for voice call
+                    Icons.phone_outlined,
                     'AI Voice Call',
                     () {
                       logger.d('AI Voice Call tapped');
-                      Navigator.of(context).pushNamed(
-                        AppRoutes.aiVoiceCall,
-                      ); // Navigate to AI Voice Call Page
+                      Navigator.of(context).pushNamed(AppRoutes.aiVoiceCall);
                     },
                   ),
                 ],
@@ -79,9 +77,9 @@ class ServicesPage extends StatelessWidget {
               Text(
                 'In-Store Services',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black87,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.black87,
+                    ),
               ),
               const SizedBox(height: 16.0),
               GridView.count(
@@ -109,9 +107,16 @@ class ServicesPage extends StatelessWidget {
                       Navigator.pushNamed(context, AppRoutes.circlesearch);
                     },
                   ),
-                  _buildServiceCard(context, Icons.wifi, 'NFC', () {
-                    logger.d('NFC tapped');
-                  }),
+                  // ✅ Corrected NFC Card
+                  _buildServiceCard(
+                    context,
+                    Icons.wifi,
+                    'NFC',
+                    () {
+                      logger.d('NFC tapped');
+                      Navigator.of(context).pushNamed(AppRoutes.nfcPayment); // Navigate to NFC page
+                    },
+                  ),
                 ],
               ),
               const SizedBox(height: 32.0),
@@ -120,9 +125,9 @@ class ServicesPage extends StatelessWidget {
               Text(
                 'Online Services',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black87,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.black87,
+                    ),
               ),
               const SizedBox(height: 16.0),
               GridView.count(
@@ -174,7 +179,7 @@ class ServicesPage extends StatelessWidget {
     );
   }
 
-  // --- Helper Widget for Service Cards (unchanged) ---
+  // --- Helper Widget for Service Cards ---
   Widget _buildServiceCard(
     BuildContext context,
     IconData icon,

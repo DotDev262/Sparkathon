@@ -1,10 +1,15 @@
-// lib/main.dart
-
 import 'package:flutter/material.dart';
 import 'package:walmart/core/constants/colors.dart';
 import 'core/routes/app_routes.dart';
+import 'package:nfc_manager/nfc_manager.dart'; // ✅ Add this import for NFC
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // ✅ Optional: Check if NFC is available at launch
+  bool isAvailable = await NfcManager.instance.isAvailable();
+  print('NFC Available: $isAvailable'); // Can be removed in production
+
   runApp(const MyApp());
 }
 
@@ -17,19 +22,16 @@ class MyApp extends StatelessWidget {
       title: 'Walmart Companion App',
       debugShowCheckedModeBanner: false, // Set to false for production
       theme: ThemeData(
-        primaryColor: AppColors.primaryBlue, // Your primary Walmart blue
+        primaryColor: AppColors.primaryBlue,
         appBarTheme: const AppBarTheme(
-          backgroundColor:
-              AppColors.primaryBlue, // Use darkBlue for AppBar background
-          foregroundColor: AppColors.white, // White text/icons on AppBar
+          backgroundColor: AppColors.primaryBlue,
+          foregroundColor: AppColors.white,
         ),
-        scaffoldBackgroundColor:
-            AppColors.white, // Default background for most screens
+        scaffoldBackgroundColor: AppColors.white,
         colorScheme: ColorScheme.fromSwatch().copyWith(
-          secondary: AppColors.primaryBlue, // Accent color
+          secondary: AppColors.primaryBlue,
         ),
-        fontFamily: 'Bogle', // You can set a custom font here
-        // Define text themes if you want consistent typography
+        fontFamily: 'Bogle',
         textTheme: const TextTheme(
           headlineSmall: TextStyle(
             fontSize: 24.0,
@@ -39,10 +41,10 @@ class MyApp extends StatelessWidget {
           bodyLarge: TextStyle(fontSize: 16.0, color: AppColors.black87),
           bodyMedium: TextStyle(fontSize: 14.0, color: AppColors.black87),
         ),
-        useMaterial3: true, // Opt-in to Material 3 design
+        useMaterial3: true,
       ),
-      initialRoute: AppRoutes.home, // Set the initial route
-      routes: AppRoutes.routes, // Define your routes
+      initialRoute: AppRoutes.home,
+      routes: AppRoutes.routes, // NFC should be added in AppRoutes
     );
   }
 }
