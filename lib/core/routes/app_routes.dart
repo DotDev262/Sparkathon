@@ -7,6 +7,7 @@ import 'package:walmart/features/account/account_page.dart'; // Assuming you hav
 import 'package:walmart/features/cart/checkout_page.dart'; // Import the new checkout page
 import 'package:walmart/features/ai_voice_call/ai_voice_call_page.dart';
 import 'package:walmart/features/circle_search/CircleSearch.dart';
+import 'package:walmart/features/ai_chat/ai_chat_page.dart';
 
 class AppRoutes {
   static const String home = '/';
@@ -17,6 +18,7 @@ class AppRoutes {
   static const String checkout = '/checkout';
   static const String aiVoiceCall = '/aiVoiceCall';
   static const String circlesearch = '/Circlesearch';
+  static const String aiChat = '/aiChat';
 
   static Map<String, WidgetBuilder> routes = {
     home: (context) => const HomePage(),
@@ -28,5 +30,6 @@ class AppRoutes {
     checkout: (context) => const CheckoutPage(), // Map the new route
     aiVoiceCall: (context) => const AIVoiceCallPage(),
     circlesearch: (context) => const CircleSearchPage(),
+    aiChat: (context) => const AIChatPage(),
   };
 }
