@@ -106,6 +106,7 @@ class ServicesPage extends StatelessWidget {
                     'Circle Search',
                     () {
                       logger.d('Circle Search tapped');
+                      Navigator.pushNamed(context, AppRoutes.circlesearch);
                     },
                   ),
                   _buildServiceCard(context, Icons.wifi, 'NFC', () {

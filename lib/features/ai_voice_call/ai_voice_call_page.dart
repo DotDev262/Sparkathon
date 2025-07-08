@@ -3,10 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:walmart/core/constants/colors.dart';
 import 'package:walmart/core/utils/logger.dart';
-import 'package:http/http.dart' as http; // Import http package
-import 'dart:convert'; // For json encoding/decoding
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-enum CallStatus { idle, connecting, inCall, listening, speaking, ended, error }
+enum CallStatus { idle, connecting, inCall, speaking, ended, error }
 
 class AIVoiceCallPage extends StatefulWidget {
   const AIVoiceCallPage({super.key});
@@ -17,49 +17,46 @@ class AIVoiceCallPage extends StatefulWidget {
 
 class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
   CallStatus _callStatus = CallStatus.idle;
-  String _transcript = ''; // Stores user's last input
-  String _aiResponse = ''; // Stores AI's last response
-  final TextEditingController _messageController = TextEditingController();
+  String _transcript = ''; // Stores user's last input (if N8N provides it)
+  String _aiResponse = ''; // Stores AI's response
 
   // --- N8N Webhook URL ---
   // IMPORTANT: Replace this with your actual N8N webhook URL
   static const String _n8nWebhookUrl =
-      'http://11.12.19.173:5678/webhook-test/632370fd-f7f2-4592-be2f-20aacbb117cc';
-  // Example: 'https://your.n8n.cloud/webhook/your-ai-voice-api'
-  // Or for local: 'http://192.168.1.XX:5678/webhook/your-ai-voice-api'
-  // (Use your local IP if running N8N locally and testing on device)
+      'http://11.12.19.177:5678/webhook-test/632370fd-f7f2-4592-be2f-20aacbb117cc';
 
   @override
   void dispose() {
-    _messageController.dispose();
     super.dispose();
   }
 
   // --- N8N Interaction Logic ---
 
   Future<void> _sendToN8n({required String eventType, String? message}) async {
-    if (_n8nWebhookUrl == 'YOUR_N8N_WEBHOOK_URL_HERE') {
+    if (_n8nWebhookUrl == 'YOUR_N8N_WEBHOOK_URL_HERE' ||
+        _n8nWebhookUrl.isEmpty) {
       logger.e(
         'N8N Webhook URL not set! Please replace "YOUR_N8N_WEBHOOK_URL_HERE" with your actual N8N webhook URL.',
       );
-      setState(() {
-        _callStatus = CallStatus.error;
-        _aiResponse = 'Configuration Error: N8N Webhook URL not set.';
-      });
+      if (mounted) {
+        setState(() {
+          _callStatus = CallStatus.error;
+          _aiResponse = 'Configuration Error: N8N Webhook URL not set.';
+        });
+      }
       return;
     }
 
     try {
       logger.d('Sending event to N8N: $eventType with message: $message');
       setState(() {
-        if (eventType == 'start_call') {
+        if (eventType == 'get_call') {
           _callStatus = CallStatus.connecting;
           _aiResponse = '';
           _transcript = '';
-        } else if (eventType == 'user_message') {
-          _callStatus =
-              CallStatus.listening; // Simulate listening while sending
-          _transcript = 'You: "$message"';
+        } else if (eventType == 'end_call_system') {
+          _callStatus = CallStatus.ended;
+          _aiResponse = 'Call ending...'; // Temporarily show ending message
         }
       });
 
@@ -81,7 +78,24 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
 
           setState(() {
             _aiResponse = responseData['aiResponse'] ?? 'No response from AI.';
-            _callStatus = CallStatus.inCall; // Back to in-call after response
+            // Assuming N8N might send a 'userTranscript' if it processed voice input
+            _transcript = responseData['userTranscript'] ?? '';
+
+            if (eventType == 'get_call') {
+              _callStatus = CallStatus.inCall;
+            } else if (responseData['callEnded'] == true) {
+              // N8N signals call end
+              _callStatus = CallStatus.ended;
+              // Use AI's last message or default if N8N explicitly ended call
+              _aiResponse = _aiResponse.isNotEmpty
+                  ? _aiResponse
+                  : 'Call ended.';
+              Future.delayed(const Duration(seconds: 2), () {
+                if (mounted && _callStatus == CallStatus.ended) {
+                  Navigator.of(context).pop();
+                }
+              });
+            }
           });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -106,7 +120,7 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
         }
       }
     } catch (e) {
-      logger.e('Error sending to N8N: $e');
+      logger.e('Network error sending to N8N: $e');
       if (mounted) {
         setState(() {
           _callStatus = CallStatus.error;
@@ -119,41 +133,25 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
     }
   }
 
-  void _startCall() {
-    _sendToN8n(eventType: 'start_call');
+  void _getCall() {
+    _sendToN8n(eventType: 'get_call');
   }
 
-  void _endCall() {
-    _sendToN8n(eventType: 'end_call'); // Notify N8N call ended
+  // Internal function to handle ending the call (e.g., on back button press or system signal)
+  void _endCallInternally() {
+    _sendToN8n(
+      eventType: 'end_call_system',
+    ); // Notify N8N the app is ending the session
     setState(() {
       _callStatus = CallStatus.ended;
       _aiResponse = 'Call ended. Thank you for using our AI assistant!';
+      _transcript = ''; // Clear transcript on call end
     });
-    // Optionally navigate back after a short delay
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted && _callStatus == CallStatus.ended) {
         Navigator.of(context).pop();
       }
     });
-  }
-
-  void _handleUserMessage() {
-    final message = _messageController.text.trim();
-    if (message.isNotEmpty && _callStatus == CallStatus.inCall) {
-      _sendToN8n(eventType: 'user_message', message: message);
-      _messageController.clear();
-    } else if (_callStatus != CallStatus.inCall) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please start the call first.')),
-      );
-    }
-  }
-
-  // This is for the microphone button, will also send the message from text field
-  void _onMicButtonPressed() {
-    _handleUserMessage(); // Re-use the text field logic for simplicity
-    // In a real app, this would trigger speech-to-text and then send the result
-    // For hackathon, it just sends whatever is in the text field or an empty string.
   }
 
   @override
@@ -165,8 +163,9 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
           icon: const Icon(Icons.arrow_back, color: AppColors.white),
           onPressed: () {
             if (_callStatus == CallStatus.inCall ||
-                _callStatus == CallStatus.connecting) {
-              _endCall(); // Ensure call ends if user goes back
+                _callStatus == CallStatus.connecting ||
+                _callStatus == CallStatus.speaking) {
+              _endCallInternally(); // Ensure call ends if user goes back while active
             } else {
               Navigator.of(context).pop();
             }
@@ -200,9 +199,7 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
                     const SizedBox(height: 20),
                     CircleAvatar(
                       radius: 60,
-                      backgroundColor: AppColors.primaryBlue.withValues(
-                        alpha: 0.2,
-                      ),
+                      backgroundColor: AppColors.primaryBlue.withOpacity(0.2),
                       child: Icon(
                         _getCallIcon(),
                         size: 70,
@@ -221,7 +218,6 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
                     ),
                     const SizedBox(height: 10),
                     if (_callStatus == CallStatus.connecting ||
-                        _callStatus == CallStatus.listening ||
                         _callStatus == CallStatus.speaking)
                       const CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(
@@ -239,7 +235,7 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                        color: AppColors.primaryBlue.withOpacity(0.1),
                         elevation: 1,
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
@@ -264,9 +260,8 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
                           ),
                         ),
                       ),
-                    // Display User Transcript
-                    if (_transcript.isNotEmpty &&
-                        _transcript != 'You: ""') // Don't show empty user input
+                    // Display User Transcript (if N8N sends one based on system's interpretation)
+                    if (_transcript.isNotEmpty)
                       Card(
                         margin: const EdgeInsets.symmetric(
                           vertical: 8.0,
@@ -275,7 +270,7 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        color: AppColors.yellow.withValues(alpha: .1),
+                        color: AppColors.yellow.withOpacity(.1),
                         elevation: 1,
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
@@ -283,7 +278,7 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'You:',
+                                'You (System Heard):',
                                 style: Theme.of(context).textTheme.bodyLarge
                                     ?.copyWith(
                                       fontWeight: FontWeight.bold,
@@ -292,12 +287,7 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                _transcript
-                                    .replaceAll('You: "', '')
-                                    .replaceAll(
-                                      '"',
-                                      '',
-                                    ), // Clean up for display
+                                _transcript,
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(color: AppColors.black87),
                               ),
@@ -309,108 +299,25 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
                 ),
               ),
             ),
-            // Input and Action Buttons
+            // The ONE "Get Call" Button
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _messageController,
-                          decoration: InputDecoration(
-                            hintText: 'Type your question...',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: AppColors.grey300.withValues(alpha: .5),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
-                            ),
-                          ),
-                          onSubmitted: (value) => _handleUserMessage(),
-                          enabled:
-                              _callStatus ==
-                              CallStatus.inCall, // Only enabled when in call
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      FloatingActionButton(
-                        onPressed: _callStatus == CallStatus.inCall
-                            ? _handleUserMessage
-                            : null, // Only enabled when in call
-                        backgroundColor: AppColors.primaryBlue,
-                        foregroundColor: AppColors.white,
-                        mini: true,
-                        heroTag:
-                            'sendMessageBtn', // Unique tag for multiple FABs
-                        child: const Icon(Icons.send),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
+              child: Center(
+                // Center the button
+                child: FloatingActionButton.extended(
+                  onPressed:
                       _callStatus == CallStatus.idle ||
-                              _callStatus == CallStatus.ended ||
-                              _callStatus == CallStatus.error
-                          ? ElevatedButton.icon(
-                              onPressed: _startCall,
-                              icon: const Icon(Icons.call),
-                              label: const Text('Start Call'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.green,
-                                foregroundColor: AppColors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                              ),
-                            )
-                          : ElevatedButton.icon(
-                              onPressed: _endCall,
-                              icon: const Icon(Icons.call_end),
-                              label: const Text('End Call'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.red,
-                                foregroundColor: AppColors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                              ),
-                            ),
-                      if (_callStatus == CallStatus.inCall ||
-                          _callStatus == CallStatus.listening)
-                        FloatingActionButton(
-                          onPressed: _callStatus == CallStatus.listening
-                              ? null
-                              : _onMicButtonPressed,
-                          backgroundColor: _callStatus == CallStatus.listening
-                              ? AppColors.grey
-                              : AppColors.primaryBlue,
-                          foregroundColor: AppColors.white,
-                          heroTag: 'micButton', // Unique tag for multiple FABs
-                          child: Icon(
-                            _callStatus == CallStatus.listening
-                                ? Icons.mic_off
-                                : Icons.mic,
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
+                          _callStatus == CallStatus.ended ||
+                          _callStatus == CallStatus.error
+                      ? _getCall // Only enable if idle/ended/error
+                      : null, // Disable if already connecting or in call
+                  icon: const Icon(Icons.call),
+                  label: const Text('Get Call'),
+                  backgroundColor:
+                      AppColors.primaryBlue, // Blue color as requested
+                  foregroundColor: AppColors.white,
+                  heroTag: 'getCallButton', // Unique tag for this FAB
+                ),
               ),
             ),
           ],
@@ -419,20 +326,18 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
     );
   }
 
-  // --- Helper Methods for UI state (unchanged) ---
+  // --- Helper Methods for UI state (updated for new states) ---
 
   String _getCallStatusText() {
     switch (_callStatus) {
       case CallStatus.idle:
-        return 'Ready to connect.';
+        return 'Tap "Get Call" to receive system call.';
       case CallStatus.connecting:
-        return 'Connecting to AI Assistant...';
+        return 'Connecting to System Call...';
       case CallStatus.inCall:
-        return 'Connected to AI Assistant.';
-      case CallStatus.listening:
-        return 'Sending message...'; // Updated text for N8N
+        return 'Connected to System. Waiting for AI response.';
       case CallStatus.speaking:
-        return 'Receiving AI response...'; // Updated text for N8N
+        return 'Receiving AI response...';
       case CallStatus.ended:
         return 'Call ended.';
       case CallStatus.error:
@@ -448,11 +353,8 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
       case CallStatus.connecting:
         return Icons.ring_volume;
       case CallStatus.inCall:
-        return Icons.headset_mic;
-      case CallStatus.listening:
-        return Icons.mic; // Still mic for listening, but text changes
       case CallStatus.speaking:
-        return Icons.record_voice_over; // Still same, but text changes
+        return Icons.headset_mic;
       case CallStatus.error:
         return Icons.error_outline;
     }
