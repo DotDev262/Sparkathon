@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:walmart/core/constants/colors.dart';
 import 'package:walmart/core/utils/logger.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'dart:convert';
 
 class AIChatPage extends StatefulWidget {
@@ -216,11 +217,56 @@ class _AIChatPageState extends State<AIChatPage> {
                             : const Radius.circular(16),
                       ),
                     ),
-                    child: Text(
-                      message['text']!,
-                      style: TextStyle(
-                        color: isUser ? AppColors.white : AppColors.black87,
-                      ),
+                    child: MarkdownBody(
+                      data:
+                          message['text']!, // The Markdown string from your message
+                      // You can customize the styling of Markdown elements here
+                      styleSheet:
+                          MarkdownStyleSheet.fromTheme(
+                            Theme.of(context),
+                          ).copyWith(
+                            // Style for paragraphs (default text)
+                            p: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: isUser
+                                  ? AppColors.white
+                                  : AppColors.black87,
+                            ),
+                            // Example: Style for bold text
+                            strong: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isUser
+                                  ? AppColors.white
+                                  : AppColors.black87,
+                            ),
+                            // Example: Style for headers
+                            h1: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(
+                                  color: isUser
+                                      ? AppColors.white
+                                      : AppColors.black87,
+                                ),
+                            h2: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(
+                                  color: isUser
+                                      ? AppColors.white
+                                      : AppColors.black87,
+                                ),
+                            // Add more styles for other Markdown elements like links, lists, code blocks, etc.
+                            // You might need to adjust link and image builders for interactive elements.
+                          ),
+                      // Optional: Handle taps on links if your Markdown contains them
+                      onTapLink: (text, href, title) {
+                        if (href != null) {
+                          // Example: Launch URL when a link is tapped
+                          // You'll need to add the 'url_launcher' package to pubspec.yaml
+                          // import 'package:url_launcher/url_launcher.dart';
+                          // launchUrl(Uri.parse(href));
+                        }
+                      },
+                      // Optional: Customize how images are rendered if your Markdown includes image tags
+                      // imageBuilder: (Uri uri, String? title, String? alt) {
+                      //   return Image.network(uri.toString());
+                      // },
                     ),
                   ),
                 );
