@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:walmart/core/constants/colors.dart';
 import 'core/routes/app_routes.dart';
-import 'package:nfc_manager/nfc_manager.dart'; // ✅ Add this import for NFC
+import 'package:nfc_manager/nfc_manager.dart';
+import 'core/utils/logger.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ Optional: Check if NFC is available at launch
   bool isAvailable = await NfcManager.instance.isAvailable();
-  print('NFC Available: $isAvailable'); // Can be removed in production
+  logger.d('NFC Available: $isAvailable');
 
   runApp(const MyApp());
 }
