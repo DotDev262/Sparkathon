@@ -7,7 +7,7 @@ import 'package:walmart/features/account/account_page.dart';
 import 'package:walmart/features/cart/checkout_page.dart';
 import 'package:walmart/features/ai_voice_call/ai_voice_call_page.dart';
 import 'package:walmart/features/nfc_payments/nfc_payment_page.dart'; // ✅ 1. Import NFC page
-import 'package:walmart/features/circle_search/CircleSearch.dart';
+import 'package:walmart/features/circle_search/circle_search.dart';
 import 'package:walmart/features/ai_chat/ai_chat_page.dart';
 
 class AppRoutes {
