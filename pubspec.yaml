@@ -49,6 +49,9 @@ dev_dependencies:
   
 
 
+  
+
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 # The following section is specific to Flutter packages.
@@ -89,6 +92,25 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+fonts:
+  - family: Bogle
+    fonts:
+      - asset: assets/fonts/Bogle/BOGLEREGULAR.OTF
+      - asset: assets/fonts/Bogle/BOGLEBOLD.OTF
+        weight: 700
+      - asset: assets/fonts/Bogle/BOGLEBLACK.OTF
+        weight: 900
+      - asset: assets/fonts/Bogle/BOGLEITALIC.OTF
+        style: italic
+      - asset: assets/fonts/Bogle/BOGLEBOLDITALIC.OTF
+        weight: 700
+        style: italic
+      - asset: assets/fonts/Bogle/BOGLEBLACKITALIC.OTF
+        weight: 900
+        style: italic
+
+
+
 fonts:
   - family: Bogle
     fonts:

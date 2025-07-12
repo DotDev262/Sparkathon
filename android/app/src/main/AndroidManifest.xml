@@ -5,12 +5,18 @@
     <uses-permission android:name="android.permission.NFC" />
     <uses-feature android:name="android.hardware.nfc" android:required="true" />
 
+
+    <!-- Permissions and NFC Feature -->
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature android:name="android.hardware.nfc" android:required="true" />
+
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="walmart"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         
+
 
         <activity
             android:name=".MainActivity"
@@ -21,6 +27,8 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
+
+            <!-- Flutter Theme -->
 
             <!-- Flutter Theme -->
             <meta-data
@@ -34,7 +42,19 @@
             </intent-filter>
 
             <!-- ✅ NFC Intent Filter (merged here properly) -->
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+
+            <!-- Launcher Intent -->
             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- ✅ NFC Intent Filter (merged here properly) -->
+            <intent-filter>
+                <action android:name="android.nfc.action.TECH_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -43,7 +63,14 @@
             <meta-data
                 android:name="flutterEmbedding"
                 android:value="2" />
+
+            <!-- Required by Flutter -->
+            <meta-data
+                android:name="flutterEmbedding"
+                android:value="2" />
         </activity>
+
+        <!-- Flutter Plugin Meta -->
 
         <!-- Flutter Plugin Meta -->
         <meta-data
@@ -52,8 +79,11 @@
     </application>
 
     <!-- Text Processing for Flutter -->
+    <!-- Text Processing for Flutter -->
     <queries>
         <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
             <action android:name="android.intent.action.PROCESS_TEXT" />
             <data android:mimeType="text/plain" />
         </intent>
