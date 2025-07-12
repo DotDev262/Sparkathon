@@ -17,6 +17,8 @@ class AppRoutes {
   static const String checkout = '/checkout';
   static const String aiVoiceCall = '/aiVoiceCall';
   static const String nfcPayment = '/nfcPayment'; // ✅ 2. Add route constant
+  static const String qrScanner = '/qrScanner';
+
 
   static Map<String, WidgetBuilder> routes = {
     home: (context) => const HomePage(),
@@ -26,6 +28,7 @@ class AppRoutes {
     account: (context) => const AccountPage(),
     checkout: (context) => const CheckoutPage(),
     aiVoiceCall: (context) => const AIVoiceCallPage(),
-    nfcPayment: (context) => NFCPaymentPage(), // ✅ 3. Add to routes map
+    nfcPayment: (context) => NFCPaymentPage(), 
+    qrScanner: (context) => const ServicesPage()// ✅ 3. Add to routes map
   };
 }
