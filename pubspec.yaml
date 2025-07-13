@@ -35,6 +35,7 @@ dependencies:
   http: ^1.4.0
   image_picker: ^1.0.5
   logger: ^2.6.0
+  mobile_scanner: ^7.0.1
   nfc_manager: 
     path : plugins/nfc_manager
   
@@ -108,25 +109,3 @@ fonts:
       - asset: assets/fonts/Bogle/BOGLEBLACKITALIC.OTF
         weight: 900
         style: italic
-
-
-
-fonts:
-  - family: Bogle
-    fonts:
-      - asset: assets/fonts/Bogle/BOGLEREGULAR.OTF
-      - asset: assets/fonts/Bogle/BOGLEBOLD.OTF
-        weight: 700
-      - asset: assets/fonts/Bogle/BOGLEBLACK.OTF
-        weight: 900
-      - asset: assets/fonts/Bogle/BOGLEITALIC.OTF
-        style: italic
-      - asset: assets/fonts/Bogle/BOGLEBOLDITALIC.OTF
-        weight: 700
-        style: italic
-      - asset: assets/fonts/Bogle/BOGLEBLACKITALIC.OTF
-        weight: 900
-        style: italic
-
-
-

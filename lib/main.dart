@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Walmart Companion App',
-      debugShowCheckedModeBanner: false, // Set to false for production
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: AppColors.primaryBlue,
         appBarTheme: const AppBarTheme(
