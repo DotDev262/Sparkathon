@@ -48,7 +48,7 @@ class _CircleSearchPageState extends State<CircleSearchPage> {
       var request = http.MultipartRequest(
         'POST',
         Uri.parse(
-          'http://11.12.2.41:8000/circle_search',
+          'http://192.168.0.106:8000/circle_search',
         ), // Replace with your FastAPI host
       );
 
@@ -82,6 +82,19 @@ class _CircleSearchPageState extends State<CircleSearchPage> {
         _loading = false;
       });
     }
+  }
+
+  Widget _buildStarRating(double rating) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (index) {
+        return Icon(
+          index < rating.floor() ? Icons.star : Icons.star_border,
+          color: Colors.amber,
+          size: 16,
+        );
+      }),
+    );
   }
 
   @override
@@ -139,6 +152,54 @@ class _CircleSearchPageState extends State<CircleSearchPage> {
                               .replaceAll('"', '')
                               .trim() ??
                           "";
+                      Map<String, dynamic>? ratingStars;
+                      try {
+                        final rawRating = item["rating_stars"];
+                        if (rawRating is String) {
+                          ratingStars = Map<String, dynamic>.from(
+                            json.decode(rawRating),
+                          );
+                        } else if (rawRating is Map) {
+                          ratingStars = Map<String, dynamic>.from(rawRating);
+                        }
+                      } catch (e) {
+                        logger.e("Failed to parse rating_stars", error: e);
+                      }
+                      // Calculate average rating and total reviews
+                      String ratingText = "No ratings yet";
+                      Color ratingColor = const Color.fromARGB(
+                        255,
+                        255,
+                        251,
+                        1,
+                      );
+                      double averageRating = 0;
+                      int totalRatings = 0;
+
+                      if (ratingStars != null) {
+                        totalRatings = ratingStars.values.fold(
+                          0,
+                          (sum, count) => sum + (count is int ? count : 0),
+                        );
+                        if (totalRatings > 0) {
+                          averageRating =
+                              (5 * (ratingStars["five_stars"] ?? 0) +
+                                  4 * (ratingStars["four_stars"] ?? 0) +
+                                  3 * (ratingStars["three_stars"] ?? 0) +
+                                  2 * (ratingStars["two_stars"] ?? 0) +
+                                  1 * (ratingStars["one_star"] ?? 0)) /
+                              totalRatings;
+
+                          // Set rating text and color based on average
+                          ratingText =
+                              "★ ${averageRating.toStringAsFixed(1)} ($totalRatings)";
+                          ratingColor = averageRating >= 4
+                              ? Colors.green
+                              : averageRating >= 3
+                              ? Colors.orange
+                              : Colors.red;
+                        }
+                      }
 
                       return Card(
                         margin: const EdgeInsets.symmetric(
@@ -146,32 +207,80 @@ class _CircleSearchPageState extends State<CircleSearchPage> {
                           vertical: 8,
                         ),
                         child: ListTile(
-                          leading: Image.network(
-                            imageUrl,
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, progress) {
-                              if (progress == null) return child;
-                              return const SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
+                          contentPadding: const EdgeInsets.all(8),
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              imageUrl,
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child, progress) {
+                                if (progress == null) return child;
+                                return SizedBox(
+                                  width: 60,
+                                  height: 60,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      value: progress.expectedTotalBytes != null
+                                          ? progress.cumulativeBytesLoaded /
+                                                progress.expectedTotalBytes!
+                                          : null,
+                                      strokeWidth: 2,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              logger.e(
-                                "Image load failed: $error\nURL: $imageUrl",
-                              );
-                              return const Icon(Icons.broken_image);
-                            },
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                logger.e(
+                                  "Image load failed: $error\nURL: $imageUrl",
+                                );
+                                return Container(
+                                  width: 60,
+                                  height: 60,
+                                  color: Colors.grey[200],
+                                  child: const Icon(
+                                    Icons.broken_image,
+                                    size: 30,
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                          title: Text(item["name"] ?? "Unnamed"),
-                          subtitle: Text("₹${item["price"]}"),
+                          title: Text(
+                            item["name"]?.toString() ?? "Unnamed Product",
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "₹${item["price"]?.toString() ?? "N/A"}",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Text(
+                                    ratingText,
+                                    style: TextStyle(
+                                      color: ratingColor,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  if (totalRatings > 0) ...[
+                                    const SizedBox(width: 8),
+                                    _buildStarRating(averageRating),
+                                  ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
