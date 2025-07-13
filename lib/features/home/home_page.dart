@@ -50,7 +50,9 @@ class HomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
+                          color: Colors.black.withValues(
+                            alpha: 0.1,
+                          ), // Use withOpacity for alpha
                           spreadRadius: 1,
                           blurRadius: 3,
                           offset: const Offset(0, 2),
@@ -80,7 +82,7 @@ class HomePage extends StatelessWidget {
             _buildPromoTile(
               context,
               imageUrl:
-                  'https://via.placeholder.com/600x250/0062C2/FFFFFF?text=Hot+July+4th+savings',
+                  'https://tse3.mm.bing.net/th/id/OIP.s4PrSITYWvEkzVdbQcdReAHaEK?pid=Api', // Example 4th of July image
               title: 'Hot July 4th savings',
               description: 'Shop now',
               isLargeBanner: true,
@@ -99,7 +101,7 @@ class HomePage extends StatelessWidget {
                     child: _buildPromoTile(
                       context,
                       imageUrl:
-                          'https://via.placeholder.com/300x150/87CEEB/000000?text=Hot+new+arrivals',
+                          'https://image.shutterstock.com/image-photo/colorful-collection-shirts-hanging-vibrant-260nw-2274479901.jpg', // Example New Arrivals Fashion image
                       title: 'Hot new arrivals',
                       description: 'Shop now',
                       onTap: () {
@@ -112,7 +114,7 @@ class HomePage extends StatelessWidget {
                     child: _buildPromoTile(
                       context,
                       imageUrl:
-                          'https://via.placeholder.com/300x150/D2B48C/000000?text=Summer+home+trends',
+                          'https://image.shutterstock.com/image-photo/modern-apartment-living-room-elegant-260nw-2259160537.jpg', // Example Summer Home Trends image
                       title: 'Summer home trends',
                       description: 'From \$6',
                       onTap: () {
@@ -129,7 +131,7 @@ class HomePage extends StatelessWidget {
             _buildPromoTile(
               context,
               imageUrl:
-                  'https://via.placeholder.com/600x300/228B22/FFFFFF?text=Classroom+supplies',
+                  'https://i5.walmartimages.com/dfw/4ff9c6c9-5ebe/k2-_c0dfdaaa-17c2-481f-b892-7216ce4f49d7.v1.jpg?odnHeight=340&odnWidth=604&odnBg=FFFFFF', // Example Classroom Supplies image
               title: 'Classroom supplies for teachers',
               description: 'Shop now',
               isLargeBanner: true,
@@ -148,7 +150,7 @@ class HomePage extends StatelessWidget {
                     child: _buildPromoTile(
                       context,
                       imageUrl:
-                          'https://via.placeholder.com/300x200/FF69B4/FFFFFF?text=Hot,+new+beauty',
+                          'https://media.istockphoto.com/id/1408439145/photo/autumn-skincare-and-autumn-makeup-concept-with-beauty-products-on-table.webp?s=2048x2048&w=is&k=20&c=OanHc1MH-y256GLbPXt2y3PI7GCsTtpvGm_qFbMA8_4=', // Example Beauty Products image
                       title: 'Hot, new beauty',
                       description: 'From \$10',
                       onTap: () {
@@ -161,7 +163,7 @@ class HomePage extends StatelessWidget {
                     child: _buildPromoTile(
                       context,
                       imageUrl:
-                          'https://via.placeholder.com/300x200/ADD8E6/000000?text=Up+to+45%25+off+Flash+Deals',
+                          'https://i5.walmartimages.com/dfw/4ff9c6c9-bdb2/k2-_686040ac-3f70-41ca-bf1d-a7513247a626.v1.jpg', // Example Flash Deals image
                       title: 'Up to 45% off',
                       description: 'Flash Deals',
                       onTap: () {
@@ -180,7 +182,7 @@ class HomePage extends StatelessWidget {
               child: _buildPromoTile(
                 context,
                 imageUrl:
-                    'https://via.placeholder.com/600x150/FFD600/000000?text=Walmart%2B+Offer',
+                    'https://tse2.mm.bing.net/th/id/OIP.jlBnBgmkjAxexJVjM25KzwHaEF?r=0&pid=Api', // Example Walmart+ offer image
                 title: 'Get 50% off a year of Walmart+',
                 description: 'Join Walmart+',
                 onTap: () {
