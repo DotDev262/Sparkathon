@@ -94,26 +94,44 @@ class _ServicesPageState extends State<ServicesPage> {
                 ),
               ),
               const SizedBox(height: 16.0),
+              GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                crossAxisSpacing: 16.0,
+                mainAxisSpacing: 16.0,
+                childAspectRatio: 1.5,
+                children: [
+                  _buildServiceCard(context, Icons.wifi, 'NFC', () {
+                    logger.d('NFC tapped');
+                    Navigator.of(
+                      context,
+                    ).pushNamed(AppRoutes.nfcPayment); // Navigate to NFC page
+                  }),
+                  // QR Payment Scanner
+                  _buildServiceCard(
+                    context,
+                    Icons.qr_code_scanner,
+                    'Scan QR to Pay',
+                    () async {
+                      logger.d('QR Scanner tapped');
+                      final deducted =
+                          await Navigator.of(
+                                context,
+                              ).pushNamed(AppRoutes.qrScanner)
+                              as double?;
 
-              // QR Payment Scanner
-              _buildServiceCard(
-                context,
-                Icons.qr_code_scanner,
-                'Scan QR to Pay',
-                () async {
-                  logger.d('QR Scanner tapped');
-                  final deducted =
-                      await Navigator.of(context).pushNamed(AppRoutes.qrScanner)
-                          as double?;
-
-                  if (deducted != null && deducted > 0) {
-                    setState(() {
-                      walletBalance -= deducted;
-                      if (walletBalance < 0) walletBalance = 0;
-                    });
-                  }
-                },
+                      if (deducted != null && deducted > 0) {
+                        setState(() {
+                          walletBalance -= deducted;
+                          if (walletBalance < 0) walletBalance = 0;
+                        });
+                      }
+                    },
+                  ),
+                ],
               ),
+
               const SizedBox(height: 32.0),
 
               // AI Services Section
@@ -135,19 +153,19 @@ class _ServicesPageState extends State<ServicesPage> {
                 children: [
                   _buildServiceCard(
                     context,
-                    Icons.message_outlined,
-                    'AI Chat',
-                    () {
-                      logger.d('AI Chat tapped');
-                    },
-                  ),
-                  _buildServiceCard(
-                    context,
                     Icons.phone_outlined,
                     'AI Voice Call',
                     () {
                       logger.d('AI Voice Call tapped');
                       Navigator.of(context).pushNamed(AppRoutes.aiVoiceCall);
+                    },
+                  ),
+                  _buildServiceCard(
+                    context,
+                    Icons.message_outlined,
+                    'AI Chat',
+                    () {
+                      logger.d('AI Chat tapped');
                     },
                   ),
                 ],
@@ -173,28 +191,21 @@ class _ServicesPageState extends State<ServicesPage> {
                 children: [
                   _buildServiceCard(
                     context,
+                    Icons.search_outlined,
+                    'Product Search',
+                    () {
+                      logger.d('Circle Search tapped');
+                      Navigator.pushNamed(context, AppRoutes.circlesearch);
+                    },
+                  ),
+                  _buildServiceCard(
+                    context,
                     Icons.camera_alt_outlined,
                     'Photo Center',
                     () {
                       logger.d('Photo Center tapped');
                     },
                   ),
-                  _buildServiceCard(
-                    context,
-                    Icons.circle_outlined,
-                    'Circle Search',
-                    () {
-                      logger.d('Circle Search tapped');
-                      Navigator.pushNamed(context, AppRoutes.circlesearch);
-                    },
-                  ),
-                  // ✅ Corrected NFC Card
-                  _buildServiceCard(context, Icons.wifi, 'NFC', () {
-                    logger.d('NFC tapped');
-                    Navigator.of(
-                      context,
-                    ).pushNamed(AppRoutes.nfcPayment); // Navigate to NFC page
-                  }),
                 ],
               ),
               const SizedBox(height: 32.0),
