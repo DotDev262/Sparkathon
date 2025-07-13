@@ -199,7 +199,7 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
                     const SizedBox(height: 20),
                     CircleAvatar(
                       radius: 60,
-                      backgroundColor: AppColors.primaryBlue.withOpacity(0.2),
+                      backgroundColor: AppColors.primaryBlue.withValues(alpha:0.2),
                       child: Icon(
                         _getCallIcon(),
                         size: 70,
@@ -235,7 +235,7 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        color: AppColors.primaryBlue.withOpacity(0.1),
+                        color: AppColors.primaryBlue.withValues(alpha: 0.1),
                         elevation: 1,
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
@@ -270,7 +270,7 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        color: AppColors.yellow.withOpacity(.1),
+                        color: AppColors.yellow.withValues(alpha:0.1),
                         elevation: 1,
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),

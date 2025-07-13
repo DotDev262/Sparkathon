@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:walmart/core/constants/colors.dart';
 import 'package:walmart/core/utils/logger.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'dart:convert';
 
 class AIChatPage extends StatefulWidget {
@@ -28,13 +29,13 @@ class _AIChatPageState extends State<AIChatPage> {
   static const String _vapiApiKey = '9a1ae8e6-f57d-4fa8-82a9-1b98c77ef7b3';
   static const String _vapiAssistantId = 'e2a4856f-bf48-41bd-b1c9-195e9c76ede8';
 
+  // --- New: Variable to store the chat/call ID for continuing the conversation ---
+  String? _currentCallId;
+
   @override
   void initState() {
     super.initState();
     // Initial greeting from the AI. This is a static message.
-    // If you want the AI to "say" something via Vapi.ai immediately on page load,
-    // you would call _sendChatMessage("initial greeting message for AI") here,
-    // and Vapi.ai would respond.
     _addMessage({'sender': 'AI', 'text': 'Hello! How can I assist you today?'});
   }
 
@@ -52,7 +53,6 @@ class _AIChatPageState extends State<AIChatPage> {
     // Scroll to the bottom after adding a new message
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
-        // Check if controller is attached
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 300),
@@ -78,8 +78,7 @@ class _AIChatPageState extends State<AIChatPage> {
         _vapiAssistantId.isEmpty) {
       logger.e('Vapi.ai API Key or Assistant ID not set!');
       _addMessage({
-        'sender':
-            'AI', // Sending error as AI message, could be 'System' for different styling
+        'sender': 'AI',
         'text':
             'Configuration Error: Vapi.ai API Key or Assistant ID not set. Please update the code.',
       });
@@ -92,6 +91,18 @@ class _AIChatPageState extends State<AIChatPage> {
     try {
       logger.d('Sending chat message to Vapi.ai: $userMessage');
 
+      // --- New: Prepare the request body ---
+      final Map<String, dynamic> requestBody = {
+        'assistantId': _vapiAssistantId,
+        'input': userMessage, // Send the user's message as 'input'
+      };
+
+      // --- New: Add previousCallId if available ---
+      if (_currentCallId != null) {
+        requestBody['previousChatId'] = _currentCallId;
+        logger.d('Including previousChatId: $_currentCallId');
+      }
+
       final response = await http.post(
         Uri.parse(_vapiApiUrl),
         headers: {
@@ -99,10 +110,7 @@ class _AIChatPageState extends State<AIChatPage> {
           'Authorization':
               'Bearer $_vapiApiKey', // Vapi.ai expects 'Bearer' prefix
         },
-        body: json.encode({
-          'assistantId': _vapiAssistantId,
-          'input': userMessage, // Send the user's message as 'input'
-        }),
+        body: json.encode(requestBody), // Use the prepared request body
       );
 
       if (mounted) {
@@ -111,11 +119,18 @@ class _AIChatPageState extends State<AIChatPage> {
         });
 
         if (response.statusCode >= 200 && response.statusCode < 300) {
-          // Accept any 2xx status code as success
           logger.d('Vapi.ai response received: ${response.body}');
           final Map<String, dynamic> responseData = json.decode(response.body);
 
-          // Vapi.ai's /chat endpoint returns the assistant's message in the 'message' field
+          // --- New: Extract and store the current conversation ID ---
+          if (responseData.containsKey('id') && responseData['id'] is String) {
+            _currentCallId = responseData['id'];
+            logger.d('Vapi.ai currentCallId updated to: $_currentCallId');
+          } else {
+            logger.w('Vapi.ai response missing "id" field.');
+          }
+
+          // Vapi.ai's /chat endpoint returns the assistant's message in the 'output' array's 'content' field
           final String aiResponse =
               responseData['output'][0]['content'] ?? 'No response from AI.';
           _addMessage({'sender': 'AI', 'text': aiResponse});
@@ -174,8 +189,6 @@ class _AIChatPageState extends State<AIChatPage> {
               itemBuilder: (context, index) {
                 final message = _messages[index];
                 final isUser = message['sender'] == 'User';
-                // You can add distinct styling for 'System' messages if you introduce that sender type
-                // final isSystem = message['sender'] == 'System';
 
                 return Align(
                   alignment: isUser
@@ -192,9 +205,7 @@ class _AIChatPageState extends State<AIChatPage> {
                     decoration: BoxDecoration(
                       color: isUser
                           ? AppColors.primaryBlue
-                          : AppColors.grey300.withOpacity(
-                              0.9,
-                            ), // Use withOpacity for alpha
+                          : AppColors.grey300.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.only(
                         topLeft: const Radius.circular(16),
                         topRight: const Radius.circular(16),
@@ -206,11 +217,56 @@ class _AIChatPageState extends State<AIChatPage> {
                             : const Radius.circular(16),
                       ),
                     ),
-                    child: Text(
-                      message['text']!,
-                      style: TextStyle(
-                        color: isUser ? AppColors.white : AppColors.black87,
-                      ),
+                    child: MarkdownBody(
+                      data:
+                          message['text']!, // The Markdown string from your message
+                      // You can customize the styling of Markdown elements here
+                      styleSheet:
+                          MarkdownStyleSheet.fromTheme(
+                            Theme.of(context),
+                          ).copyWith(
+                            // Style for paragraphs (default text)
+                            p: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: isUser
+                                  ? AppColors.white
+                                  : AppColors.black87,
+                            ),
+                            // Example: Style for bold text
+                            strong: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isUser
+                                  ? AppColors.white
+                                  : AppColors.black87,
+                            ),
+                            // Example: Style for headers
+                            h1: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(
+                                  color: isUser
+                                      ? AppColors.white
+                                      : AppColors.black87,
+                                ),
+                            h2: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(
+                                  color: isUser
+                                      ? AppColors.white
+                                      : AppColors.black87,
+                                ),
+                            // Add more styles for other Markdown elements like links, lists, code blocks, etc.
+                            // You might need to adjust link and image builders for interactive elements.
+                          ),
+                      // Optional: Handle taps on links if your Markdown contains them
+                      onTapLink: (text, href, title) {
+                        if (href != null) {
+                          // Example: Launch URL when a link is tapped
+                          // You'll need to add the 'url_launcher' package to pubspec.yaml
+                          // import 'package:url_launcher/url_launcher.dart';
+                          // launchUrl(Uri.parse(href));
+                        }
+                      },
+                      // Optional: Customize how images are rendered if your Markdown includes image tags
+                      // imageBuilder: (Uri uri, String? title, String? alt) {
+                      //   return Image.network(uri.toString());
+                      // },
                     ),
                   ),
                 );
@@ -248,8 +304,8 @@ class _AIChatPageState extends State<AIChatPage> {
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: AppColors.grey300.withOpacity(
-                        0.5,
+                      fillColor: AppColors.grey300.withValues(
+                        alpha: 0.5,
                       ), // Use withOpacity for alpha
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 20,
