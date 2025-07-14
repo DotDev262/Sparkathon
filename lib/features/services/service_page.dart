@@ -166,6 +166,7 @@ class _ServicesPageState extends State<ServicesPage> {
                     'AI Chat',
                     () {
                       logger.d('AI Chat tapped');
+                      Navigator.of(context).pushNamed(AppRoutes.aiChat);
                     },
                   ),
                 ],

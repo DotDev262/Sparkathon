@@ -48,7 +48,7 @@ class _CircleSearchPageState extends State<CircleSearchPage> {
       var request = http.MultipartRequest(
         'POST',
         Uri.parse(
-          'http://192.168.0.106:8000/circle_search',
+          'http://11.12.4.65:8000/circle_search',
         ), // Replace with your FastAPI host
       );
 
@@ -100,7 +100,7 @@ class _CircleSearchPageState extends State<CircleSearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Circle Search")),
+      appBar: AppBar(title: const Text("Product Search")),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null

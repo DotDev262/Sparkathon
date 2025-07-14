@@ -23,7 +23,7 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
   // --- N8N Webhook URL ---
   // IMPORTANT: Replace this with your actual N8N webhook URL
   static const String _n8nWebhookUrl =
-      'http://11.12.19.177:5678/webhook-test/632370fd-f7f2-4592-be2f-20aacbb117cc';
+      'http://11.12.18.245:5678/webhook-test/632370fd-f7f2-4592-be2f-20aacbb117cc';
 
   @override
   void dispose() {
@@ -97,13 +97,13 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
               });
             }
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'AI Response: ${_aiResponse.substring(0, _aiResponse.length > 50 ? 50 : _aiResponse.length)}...',
-              ),
-            ),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //     content: Text(
+          //       'AI Response: ${_aiResponse.substring(0, _aiResponse.length > 50 ? 50 : _aiResponse.length)}...',
+          //     ),
+          //   ),
+          // );
         } else {
           logger.e(
             'N8N request failed with status: ${response.statusCode}, body: ${response.body}',
@@ -112,11 +112,11 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
             _callStatus = CallStatus.error;
             _aiResponse = 'Error communicating with AI: ${response.statusCode}';
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: ${response.statusCode} - ${response.body}'),
-            ),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //     content: Text('Error: ${response.statusCode} - ${response.body}'),
+          //   ),
+          // );
         }
       }
     } catch (e) {
@@ -126,9 +126,9 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
           _callStatus = CallStatus.error;
           _aiResponse = 'Network Error: Cannot reach N8N service.';
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Network Error: $e')));
+        // ScaffoldMessenger.of(
+        //   context,
+        // ).showSnackBar(SnackBar(content: Text('Network Error: $e')));
       }
     }
   }
@@ -199,7 +199,9 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
                     const SizedBox(height: 20),
                     CircleAvatar(
                       radius: 60,
-                      backgroundColor: AppColors.primaryBlue.withValues(alpha:0.2),
+                      backgroundColor: AppColors.primaryBlue.withValues(
+                        alpha: 0.2,
+                      ),
                       child: Icon(
                         _getCallIcon(),
                         size: 70,
@@ -225,76 +227,76 @@ class _AIVoiceCallPageState extends State<AIVoiceCallPage> {
                         ),
                       ),
                     const SizedBox(height: 20),
-                    // Display AI Response
-                    if (_aiResponse.isNotEmpty)
-                      Card(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 8.0,
-                          horizontal: 0,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        color: AppColors.primaryBlue.withValues(alpha: 0.1),
-                        elevation: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'AI:',
-                                style: Theme.of(context).textTheme.bodyLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.primaryBlue,
-                                    ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                _aiResponse,
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(color: AppColors.black87),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    // Display User Transcript (if N8N sends one based on system's interpretation)
-                    if (_transcript.isNotEmpty)
-                      Card(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 8.0,
-                          horizontal: 0,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        color: AppColors.yellow.withValues(alpha:0.1),
-                        elevation: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'You (System Heard):',
-                                style: Theme.of(context).textTheme.bodyLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.darkBlue,
-                                    ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                _transcript,
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(color: AppColors.black87),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    // // Display AI Response
+                    // if (_aiResponse.isNotEmpty)
+                    //   Card(
+                    //     margin: const EdgeInsets.symmetric(
+                    //       vertical: 8.0,
+                    //       horizontal: 0,
+                    //     ),
+                    //     shape: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(12),
+                    //     ),
+                    //     color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                    //     elevation: 1,
+                    //     child: Padding(
+                    //       padding: const EdgeInsets.all(12.0),
+                    //       child: Column(
+                    //         crossAxisAlignment: CrossAxisAlignment.start,
+                    //         children: [
+                    //           Text(
+                    //             'AI:',
+                    //             style: Theme.of(context).textTheme.bodyLarge
+                    //                 ?.copyWith(
+                    //                   fontWeight: FontWeight.bold,
+                    //                   color: AppColors.primaryBlue,
+                    //                 ),
+                    //           ),
+                    //           const SizedBox(height: 4),
+                    //           Text(
+                    //             _aiResponse,
+                    //             style: Theme.of(context).textTheme.bodyMedium
+                    //                 ?.copyWith(color: AppColors.black87),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ),
+                    // // Display User Transcript (if N8N sends one based on system's interpretation)
+                    // if (_transcript.isNotEmpty)
+                    //   Card(
+                    //     margin: const EdgeInsets.symmetric(
+                    //       vertical: 8.0,
+                    //       horizontal: 0,
+                    //     ),
+                    //     shape: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(12),
+                    //     ),
+                    //     color: AppColors.yellow.withValues(alpha: 0.1),
+                    //     elevation: 1,
+                    //     child: Padding(
+                    //       padding: const EdgeInsets.all(12.0),
+                    //       child: Column(
+                    //         crossAxisAlignment: CrossAxisAlignment.start,
+                    //         children: [
+                    //           Text(
+                    //             'You (System Heard):',
+                    //             style: Theme.of(context).textTheme.bodyLarge
+                    //                 ?.copyWith(
+                    //                   fontWeight: FontWeight.bold,
+                    //                   color: AppColors.darkBlue,
+                    //                 ),
+                    //           ),
+                    //           const SizedBox(height: 4),
+                    //           Text(
+                    //             _transcript,
+                    //             style: Theme.of(context).textTheme.bodyMedium
+                    //                 ?.copyWith(color: AppColors.black87),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ),
                   ],
                 ),
               ),
